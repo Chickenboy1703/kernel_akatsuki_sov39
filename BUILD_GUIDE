@@ -1,0 +1,53 @@
+Kernel_Info: 4.9.186 XZ3 KDDI 52.1.C.0.360
+
+// All Tools
+
+--- Dependence ---
+sudo apt install libfl-dev
+
+--- GCC ---
+git clone https://github.com/Chickenboy1703/aarch64-linux-android-4.9
+
+--- Tools need for compile ---
+https://github.com/Chickenboy1703/Tools_for_compile_kernel_10.git
+
+// EXPORT
+export ARCH=arm64
+
+### export DTC_EXT="your 'dtc' tool path" ### -- Ex:
+export DTC_EXT=/home/natsu/Downloads/tool/dtc 
+
+### export DTC_OVERLAY_TEST_EXT=" your 'ufdt_apply_overlay_host' path" ### -- Ex:
+export DTC_OVERLAY_TEST_EXT=/home/natsu/Downloads/tool/ufdt_apply_overlay_host
+
+export KCFLAGS=-mno-android
+
+### export PATH="your gcc path" ### -- Ex:
+export PATH=/home/natsu/toolchain/bin:$PATH
+
+export CROSS_COMPILE=aarch64-linux-android-
+export KBUILD_DIFFCONFIG=akatsuki_kddi_diffconfig
+
+// BUILD
+make CONFIG_BUILD_ARM64_DT_OVERLAY=y O=./out sdm845-perf_defconfig
+make CONFIG_BUILD_ARM64_DT_OVERLAY=y O=./out
+
+You can see out/arch/arm64/boot/Image.gz-dtb if you succeed
+
+// Repack boot.img
+--- Download Android Image Kitchen for linux ---
+https://forum.xda-developers.com/attachments/aik-linux-v3-8-all-tar-gz.5300923/
+
+--- Copy your stock boot.img to AIK tool directory ---
+ $ ./unpackimg.sh
+
+--- Rename "Image.gz-dtb" to "boot.img-kernel" and copy it into "split_img" in the AIK's directory ---
+ $ ./repackimg.sh
+
+-- You will see image-new.img file.
+
+// Compile dtbo.img ---
+
+python mkdtboimg.py create /home/natsuki/Desktop/kernel_akatsuki_kddi/out/arch/arm64/boot/dtbo.img /home/natsuki/Desktop/kernel_akatsuki_kddi/out/arch/arm64/boot/dts/somc/*.dtbo
+
+-- You will see dtbo.img at .../out/arch/arm64/boot/dtbo.img
